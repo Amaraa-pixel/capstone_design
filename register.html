@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="form-section">
+    <h1>Register a user</h1>
+    <form method="post" class="form">
+        <label>Name
+            <input type="text" name="name" required>
+        </label>
+        <label>Email
+            <input type="email" name="email" required>
+        </label>
+        <label>Password
+            <input type="password" name="password" required>
+        </label>
+        <label>Bio
+            <textarea name="bio" rows="3" placeholder="Tell us about yourself"></textarea>
+        </label>
+        <button class="btn" type="submit">Submit registration</button>
+    </form>
+</section>
+{% endblock %}

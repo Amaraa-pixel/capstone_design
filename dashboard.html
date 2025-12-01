@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+    <h1>Device dashboard</h1>
+    {% if devices %}
+        <div class="device-menu">
+            {% for device in devices %}
+                <a class="chip {% if device == selected_device %}active{% endif %}" href="{{ url_for('dashboard', device=device) }}">{{ device }}</a>
+            {% endfor %}
+        </div>
+        {% if device_rows %}
+        <div class="grid">
+            <div class="card">
+                <h3>{{ selected_device }} - Metrics</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in device_rows %}
+                        <tr>
+                            <td>{{ row['metric'] }}</td>
+                            <td>{{ row['value'] }}</td>
+                            <td>{{ row['recorded_at'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Dashboard summary</h3>
+                <ul class="stats">
+                    {% for row in device_rows %}
+                    <li>
+                        <span class="label">{{ row['metric'] }}</span>
+                        <span class="value">{{ row['value'] }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% else %}
+            <p>No data available for {{ selected_device }}.</p>
+        {% endif %}
+    {% else %}
+        <p>No device data found.</p>
+    {% endif %}
+</section>
+{% endblock %}
