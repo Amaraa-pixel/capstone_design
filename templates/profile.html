@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="form-section">
+    <h1>Profile</h1>
+    {% if user %}
+    <form method="post" class="form">
+        <label>Name
+            <input type="text" name="name" value="{{ user['name'] }}" required>
+        </label>
+        <label>Email
+            <input type="email" name="email" value="{{ user['email'] }}" required>
+        </label>
+        <label>Bio
+            <textarea name="bio" rows="3">{{ user['bio'] }}</textarea>
+        </label>
+        <button class="btn" type="submit">Update profile</button>
+    </form>
+    {% else %}
+        <p>No user is registered yet. Please create a <a href="{{ url_for('register') }}">registration</a> first.</p>
+    {% endif %}
+</section>
+{% endblock %}

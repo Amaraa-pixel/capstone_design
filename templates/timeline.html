@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+    <h1>{{ plug_name }} timeline</h1>
+    <p class="muted">Serial: {{ plug_serial }}</p>
+    <div class="grid">
+        <div class="card">
+            <h3>Timeline chart</h3>
+            <div class="chart-container">
+                <canvas id="timelineChart" aria-label="Plug state timeline" role="img"></canvas>
+            </div>
+            <p class="muted">States are plotted as 1 = ON and 0 = OFF. This view auto-refreshes every 5 seconds.</p>
+        </div>
+        <div class="card">
+            <h3>Event log</h3>
+            {% if timeline_rows %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp (UTC)</th>
+                        <th>State</th>
+                    </tr>
+                </thead>
+                <tbody id="logBody">
+                    {% for row in timeline_rows %}
+                    <tr>
+                        <td>{{ row['ts'] }}</td>
+                        <td>{{ row['state'] | upper }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No timeline data available for the plug yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let timelineChart;
+
+async function loadTimeline() {
+    const response = await fetch("{{ url_for('plug_timeline_api') }}");
+    const data = await response.json();
+
+    if (!data.length) return;
+
+    const labels = data.map(point => point.ts);
+    const values = data.map(point => point.state.toLowerCase() === 'on' ? 1 : 0);
+
+    const ctx = document.getElementById('timelineChart').getContext('2d');
+    if (!timelineChart) {
+        timelineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: '{{ plug_name }} state (1=ON, 0=OFF)',
+                    data: values,
+                    borderColor: 'rgba(45, 108, 223, 1)',
+                    backgroundColor: 'rgba(45, 108, 223, 0.15)',
+                    tension: 0.25,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { min: -0.2, max: 1.2, ticks: { stepSize: 1 } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    } else {
+        timelineChart.data.labels = labels;
+        timelineChart.data.datasets[0].data = values;
+        timelineChart.update();
+    }
+
+    const tbody = document.getElementById('logBody');
+    if (tbody) {
+        tbody.innerHTML = data.map(point => `
+            <tr>
+                <td>${point.ts}</td>
+                <td>${point.state.toUpperCase()}</td>
+            </tr>
+        `).join('');
+    }
+}
+
+loadTimeline();
+setInterval(loadTimeline, 5000);
+</script>
+{% endblock %}

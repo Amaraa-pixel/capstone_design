@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+    <h1>Welcome to the SmartHome system</h1>
+    <p>Use the navigation links to open registration, profile, or dashboard views.</p>
+    <div class="cards">
+        <div class="card">
+            <h3>Register</h3>
+            <p>Collect a new user record and store the password using hashing.</p>
+            <a class="btn" href="{{ url_for('register') }}">Go to registration</a>
+        </div>
+        <div class="card">
+            <h3>Profile</h3>
+            <p>View and update the stored details for the registered user.</p>
+            <a class="btn" href="{{ url_for('profile') }}">Open profile</a>
+        </div>
+        <div class="card">
+            <h3>Dashboard</h3>
+            <p>Select a device from the menu to view its metrics as both a table and summary.</p>
+            <a class="btn" href="{{ url_for('dashboard') }}">Open dashboard</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
